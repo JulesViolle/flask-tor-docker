@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-WORKDIR /usr/nginx-tor/
+WORKDIR /usr/flask-tor/
 
 COPY ./main.py ./app/
 COPY ./requirements.txt ./app/

@@ -24,8 +24,9 @@ services:
 
 
 
-    command: bash -c 'cp -r /var/lib/back-tor/hidden_service/* /var/lib/tor/hidden_service && chown -R debian-tor:debian-tor /var/lib/tor/hidden_service &&  echo "Configuring Tor" && printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc  && service tor start && printf "Onion Site Is Running\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname && python3 ./app/main.py '
+    command: bash -c 'cp -r /var/lib/back-tor/* /var/lib/tor/ && chown -R debian-tor:debian-tor /var/lib/tor/hidden_service && chmod -R u=rwx,g=s,o= /var/lib/tor/hidden_service/ &&  echo "Configuring Tor" && printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc  && service tor start && printf "Onion Site Is Running\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname && python3 ./app/main.py '
     
+    #command: bash -c "cp -r /var/lib/back-tor/* /var/lib/tor/ && python3 ./app/main.py"
 
     build:
       context: .

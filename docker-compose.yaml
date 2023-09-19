@@ -1,0 +1,59 @@
+version: "3.8"
+
+volumes:
+  nginx-tor:
+    name: "flask-tor"
+    
+
+services:
+  nginx-tor:
+    image: "flask-tor"
+    hostname: "flask-tor"
+    container_name: "flask-tor"
+    user: root
+
+
+    # networks:
+    #   flask-tor:
+    #     ipv4_address: 192.168.1.200
+
+
+    volumes:
+       - "./tor_keys:/var/lib/back-tor/hidden_service:ro"
+      
+
+
+
+    command: bash -c 'cp -r /var/lib/back-tor/hidden_service/* /var/lib/tor/hidden_service && chown -R debian-tor:debian-tor /var/lib/tor/hidden_service &&  echo "Configuring Tor" && printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc  && service tor start && printf "Onion Site Is Running\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname && python3 ./app/main.py '
+    
+
+    build:
+      context: .
+      dockerfile: "./Dockerfile"
+    
+
+
+    restart: always
+
+
+
+
+
+
+# networks:
+#   nginx-tor:
+#     name: "flask-tor"
+#     driver: ipvlan
+#     driver_opts:
+#       parent: enp2s0f0
+#     ipam:
+#       config:
+#         - subnet: 192.168.1.0/24
+#           gateway: 192.168.1.1
+
+
+
+
+
+
+

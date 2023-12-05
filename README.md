@@ -5,3 +5,4 @@
        Dst: 10.10.2.0
        Subnet-Mask: 255.255.255.0
        Next-Hop :Your-Machine-IP
+4) `docker compose up`

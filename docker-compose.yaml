@@ -3,78 +3,13 @@ version: "3.8"
     
 
 services:
-  # flask-tor:
-  #   image: "flask-tor"
-  #   hostname: "flask-tor"
-  #   container_name: "flask-tor"
-  #   user: tor
-  #   labels:
-  #     - com.centurylinklabs.watchtower.enable=true
-
-
-  #   build:
-  #     context: .
-  #     dockerfile: "./Dockerfile"  
-    
-    
-
-  #   volumes:
-  #      - "./tor_keys:/var/lib/tor/hidden_service"
-     
-    
-      
-  #   networks:
-  #     # internet-network:
-  #     #   ipv4_address: 10.10.2.2
-
-  #     private-network:
-  #       ipv4_address: 10.10.1.5
-  #   ports:
-  #     - 8080:8080
-
-
-
-
-
-  #   restart: always
-  #   #command: bash -c 'gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app'
-  #   #command: bash -c 'echo "&flaskuser&" | su -c gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app flaskuser '
-  #   command: sh -c 'echo "&root&" | su -c "chown -R tor:tor /var/lib/tor/ && chmod -R u=rwx,g=s,o= /var/lib/tor/hidden_service/" root > /dev/null 2>&1 && echo "Configuring Tor" & tor & sleep 2 && printf "Onion Site Will Be Up in 30 Seconds\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname &&  echo "&flaskuser&" |  su -c "gunicorn -b 0.0.0.0:8080  --pythonpath ./app -w 2  --threads 3 main:app" flaskuser '
-    
-  #   #command: bash -c 'cp -r /var/lib/back-tor/hidden_service/* /var/lib/tor/hidden_service/  && chown -R tor /var/lib/tor/ && echo "Configuring Tor" && printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc.sample  &&  rc-service tor start || rc-service tor restart && printf "Onion Site Is Running\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname && python3 ./app/main.py gunicorn -b 127.0.0.1:5000  --pythonpath ./app/ -w 2  --threads 3 main:app'
-    
-    
-  #   depends_on:
-  #     - watchtower
-
-
-
-  # watchtower:
-  #   image: "containrrr/watchtower"
-  #   hostname: "watchtower"
-  #   container_name: "watchtower"
-
-
-  #   volumes:
-  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - /etc/localtime:/etc/localtime:ro
-
-
-  #   environment:
-  #     WATCHTOWER_SCHEDULE: "0 00 00 * * *"
-  #     WATCHTOWER_CLEANUP: "true"
-  #     ATCHTOWER_DEBUG: "true"
-  #     WATCHTOWER_LABEL_ENABLE: "true"
-      
-
-    
-  flask-tor-ex:
-    image: "fsc"
-    hostname: "flask-tor-ex-1"
-    container_name: "flask-tor-ex-1"
+  flask-tor-1:
+    image: "flask-tor"
+    hostname: "flask-tor-1"
+    container_name: "flask-tor-1"
     user: tor
-    
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
 
 
     build:
@@ -89,141 +24,65 @@ services:
     
       
     networks:
-      # internet-network:
-      #   ipv4_address: 10.10.2.2
+      internet-network:
+        ipv4_address: 10.10.2.2
 
-      private-network:
-        ipv4_address: 169.254.250.15
-    
+      
+    ports:
+      - 8080:8080
 
 
 
 
 
     restart: always
-    #command: bash -c 'gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app'
-    #command: bash -c 'echo "&flaskuser&" | su -c gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app flaskuser '
+    
     command: sh -c 'echo "&root&" | su -c "chown -R tor:tor /var/lib/tor/ && chmod -R u=rwx,g=s,o= /var/lib/tor/hidden_service/" root > /dev/null 2>&1 && echo "Configuring Tor" & tor & sleep 2 && printf "Onion Site Will Be Up in 30 Seconds\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname &&  echo "&flaskuser&" |  su -c "gunicorn -b 0.0.0.0:8080  --pythonpath ./app -w 2  --threads 3 main:app" flaskuser '
     
-    #command: bash -c 'cp -r /var/lib/back-tor/hidden_service/* /var/lib/tor/hidden_service/  && chown -R tor /var/lib/tor/ && echo "Configuring Tor" && printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc.sample  &&  rc-service tor start || rc-service tor restart && printf "Onion Site Is Running\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname && python3 ./app/main.py gunicorn -b 127.0.0.1:5000  --pythonpath ./app/ -w 2  --threads 3 main:app'
+
     
-  flask-tor-ex-2:
-      image: "fsc"
-      hostname: "flask-tor-ex-2"
-      container_name: "flask-tor-ex-2"
-      user: tor
+    depends_on:
+      - watchtower
+
+
+
+  watchtower:
+    image: "containrrr/watchtower"
+    hostname: "watchtower"
+    container_name: "watchtower"
+
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+
+    environment:
+      WATCHTOWER_SCHEDULE: "0 00 00 * * *"
+      WATCHTOWER_CLEANUP: "true"
+      ATCHTOWER_DEBUG: "true"
+      WATCHTOWER_LABEL_ENABLE: "true"
       
-
-
-      build:
-        context: .
-        dockerfile: "./Dockerfile"  
-      
-      
-
-      volumes:
-        - "./tor_keys:/var/lib/tor/hidden_service"
-      
-      
-        
-      networks:
-        # internet-network:
-        #   ipv4_address: 10.10.2.2
-
-        private-network:
-          ipv4_address: 169.254.96.75
-      
-
-
-
-
-
-      restart: always
-      #command: bash -c 'gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app'
-      #command: bash -c 'echo "&flaskuser&" | su -c gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app flaskuser '
-      command: sh -c 'echo "&root&" | su -c "chown -R tor:tor /var/lib/tor/ && chmod -R u=rwx,g=s,o= /var/lib/tor/hidden_service/" root > /dev/null 2>&1 && echo "Configuring Tor" & tor & sleep 2 && printf "Onion Site Will Be Up in 30 Seconds\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname &&  echo "&flaskuser&" |  su -c "gunicorn -b 0.0.0.0:8080  --pythonpath ./app -w 2  --threads 3 main:app" flaskuser '
-        
-    
-  flask-tor-ex-3:
-      image: "fsc"
-      hostname: "flask-tor-ex-3"
-      container_name: "flask-tor-ex-3"
-      user: tor
-      
-
-
-      build:
-        context: .
-        dockerfile: "./Dockerfile"  
-      
-      
-
-      volumes:
-        - "./tor_keys:/var/lib/tor/hidden_service"
-      
-      
-        
-      networks:
-        # internet-network:
-        #   ipv4_address: 10.10.2.2
-
-        private-network:
-          ipv4_address: 169.254.185.247
-      
-
-
-
-
-
-      restart: always
-      #command: bash -c 'gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app'
-      #command: bash -c 'echo "&flaskuser&" | su -c gunicorn -b 127.0.0.1:8080  --pythonpath ./app/ -w 2  --threads 3 main:app flaskuser '
-      command: sh -c 'echo "&root&" | su -c "chown -R tor:tor /var/lib/tor/ && chmod -R u=rwx,g=s,o= /var/lib/tor/hidden_service/" root > /dev/null 2>&1 && echo "Configuring Tor" & tor & sleep 2 && printf "Onion Site Will Be Up in 30 Seconds\nOnion address -> " && cat /var/lib/tor/hidden_service/hostname &&  echo "&flaskuser&" |  su -c "gunicorn -b 0.0.0.0:8080  --pythonpath ./app -w 2  --threads 3 main:app" flaskuser '
-      
-    
-
 
 
 
 
 networks:
  
-  # internet-network:
-  #   name: "flasktor-internet-network"
+  internet-network:
+    name: "flasktor-internet-network"
     
-  #   driver: ipvlan
-  #   driver_opts:
-  #     parent: enp2s0f0
-  #     ipvlan_mode: l3
-    
-    
-  #   ipam:
-  #     config:
-  #       - subnet: 10.10.2.0/24
-  #         gateway: 10.10.2.1
-               
-    
-
-
-  private-network:
-    name: "flasktor-private-network"
-    
-    driver: bridge
-    #internal: true
+    driver: ipvlan
     driver_opts:
       parent: enp2s0f0
-      
       ipvlan_mode: l3
-      ipvlan_flag: bridge
-      
-      
+    
+    
     ipam:
       config:
-        - subnet: 169.254.0.0/16
-          gateway: 169.254.1.1
-
-
-
-
-
+        - subnet: 10.10.2.0/24
+          gateway: 10.10.2.1
+               
+    
 

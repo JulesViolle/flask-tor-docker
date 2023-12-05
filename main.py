@@ -1,22 +1,18 @@
-from flask import Flask
-import redis,os
-
-app=Flask(__name__)
-
-
-
-@app.route("/")
-def main():
-
-    return f"Hello"
 
 
 
 
-port=os.environ.get("PORT")
-if port==None:
-    app.run("0.0.0.0",port=8080)
-app.run("0.0.0.0",port=port)
 
 
+nums=list(range(1,27,1))
+s=4
+y=16
+res=[]
+res2=[]
+for i in nums[:]:
+    res.append((((i+s)/y)*y)-s==i)
+    res2.append(((i+s)/y))
+
+print(all(res))
+print(res2)
 

@@ -1,24 +1,45 @@
-FROM ubuntu:latest
-
+#FROM debian:latest
+FROM bash
 WORKDIR /usr/flask-tor/
 
-COPY ./main.py ./app/
-COPY ./requirements.txt ./app/
+RUN apk  update -q &&\
+    apk add tor -q &&\
+    apk add nano -q &&\
+    apk add psmisc -q &&\
+    apk add python3 -q &&\
+    apk add py3-pip -q &&\
+    apk add openrc -q &&\
+    apk add sudo &&\
+    pip3 install gunicorn 
+RUN apk add --update util-linux
 
-RUN apt update -y &&\
-    apt install tor -y &&\
-    apt install nano -y &&\
-    apt install psmisc -y &&\
-    apt install -y python3 &&\
-    apt install -y python3-pip &&\
-    pip3 install --quiet -r ./app/requirements.txt &&\
-    apt install systemctl -y &&\
-    mkdir -p /var/lib/tor/hidden_service 
+RUN cp /etc/tor/torrc.sample /etc/tor/torrc &&\ 
+    chmod o=r /etc/tor/torrc &&\
+    printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc  &&\
+    openrc boot
+
+
+RUN adduser -D flaskuser && echo 'flaskuser:&flaskuser&' | chpasswd &&\ 
+    echo 'tor:&tor&' | chpasswd &&\
+    echo 'root:&root&' | chpasswd &&\
+    addgroup tor &&\
+    addgroup flaskuser &&\
+    addgroup tor tor; exit 0  &&\
+    addgroup flaskuser flaskuser; exit 0
+
+RUN chmod u+s,g+s /bin/su
+
     
 
-    
+USER tor
+RUN mkdir -p /var/lib/tor/ 
 
 
+USER flaskuser
+COPY --chown=flaskuser:flaskuser ./app/ ./app/
+RUN pip3 install --quiet -r ./app/requirements.txt 
+
+RUN chmod -R g=,o= ./app 
 
 
 

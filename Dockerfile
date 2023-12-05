@@ -13,7 +13,7 @@ RUN apk  update -q &&\
     pip3 install gunicorn 
 RUN apk add --update util-linux
 
-RUN cp /etc/tor/torrc.sample /etc/tor/torrc &&\ 
+RUN cp ./etc/tor/torrc /etc/tor/torrc &&\ 
     chmod o=r /etc/tor/torrc &&\
     printf "HiddenServiceDir /var/lib/tor/hidden_service/\nHiddenServicePort 80 127.0.0.1:8080" >> /etc/tor/torrc  &&\
     openrc boot
@@ -40,7 +40,6 @@ COPY --chown=flaskuser:flaskuser ./app/ ./app/
 RUN pip3 install --quiet -r ./app/requirements.txt 
 
 RUN chmod -R g=,o= ./app 
-
 
 
 
